@@ -1,0 +1,51 @@
+slot {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.arbre-container {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 0%;
+}
+
+#main__rect {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+#mmi {
+  font-size: 3rem;
+  text-anchor: middle;
+}
+#exprimer__title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  transform-origin: center;
+  transform: rotate(-90deg);
+}
+#competence__title {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+text {
+  font-family: var(--font-family-base);
+}
+#competence__niveau,
+#competence__number {
+  font-size: 1.25rem;
+}
+#scale__to,
+#scale__from,
+#scale__devider {
+  font-size: 1.375rem;
+}
+#circle__stroke > path {
+  fill: #f2ede7;
+}
+[data-niveau].is-selected #circle__stroke > path {
+  fill: #ff4d4d;
+}

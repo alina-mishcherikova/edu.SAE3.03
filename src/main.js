@@ -8,24 +8,24 @@ import { SvgDemo2Page } from "./pages/svg-demo2/page.js";
 import { SvgDemo3Page } from "./pages/svg-demo3/page.js";
 import { SvgDemo4Page } from "./pages/svg-demo4/page.js";
 import { SvgDemo5Page } from "./pages/svg-demo5/page.js";
-
+import { ArbrePage } from "./pages/arbre/page.js";
 // Exemple d'utilisation avec authentification
 
 const router = new Router("app");
 
 router.addLayout("/", RootLayout);
 
-
 router.addRoute("/", SvgDemo1Page);
 router.addRoute("/svg-demo1", SvgDemo1Page);
 
 router.addRoute("/svg-demo2", SvgDemo2Page);
 
-
 router.addRoute("/svg-demo3", SvgDemo3Page);
 router.addRoute("/svg-demo4", SvgDemo4Page);
 
 router.addRoute("/svg-demo5", SvgDemo5Page);
+
+router.addRoute("/arbre", ArbrePage);
 
 router.addRoute("*", The404Page);
 
