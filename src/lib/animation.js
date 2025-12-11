@@ -201,9 +201,6 @@ Animation.buildTertiaryLine = function (lineEl) {
 };
 
 Animation.buildCurvedLine = function (groupEl, baseDelay = 0) {
-  if (!groupEl) return;
-
-  // Якщо прилетів NodeList або масив – обійдемо всі елементи рекурсивно
   if (groupEl instanceof NodeList || Array.isArray(groupEl)) {
     groupEl.forEach((el, index) => {
       Animation.buildCurvedLine(el, baseDelay + index * 0.2);
@@ -211,25 +208,18 @@ Animation.buildCurvedLine = function (groupEl, baseDelay = 0) {
     return;
   }
 
-  // Тут ми вже впевнені, що groupEl – один <g>
   const vertical = groupEl.querySelector("#vertical");
   const horizontal = groupEl.querySelector("#horizontal");
   const corners = groupEl.querySelectorAll("#corner__1, #corner__2");
 
-  if (!vertical || !horizontal) {
-    // якщо раптом щось не знайшли – тихенько виходимо
-    return;
-  }
-
-  // налаштовуємо transform для коректного scale
   gsap.set(vertical, {
     transformBox: "fill-box",
-    transformOrigin: "50% 100%", // росте знизу вгору
+    transformOrigin: "50% 100%",
   });
 
   gsap.set(horizontal, {
     transformBox: "fill-box",
-    transformOrigin: "0% 50%", // росте зліва направо
+    transformOrigin: "0% 50%",
   });
 
   gsap.set(corners, {
@@ -239,7 +229,6 @@ Animation.buildCurvedLine = function (groupEl, baseDelay = 0) {
 
   const tl = gsap.timeline({ delay: baseDelay });
 
-  // 1. Вертикальна – «кубиками» вгору
   tl.fromTo(
     vertical,
     {
@@ -254,7 +243,6 @@ Animation.buildCurvedLine = function (groupEl, baseDelay = 0) {
     },
   );
 
-  // 2. Горизонтальна – «кубиками» справа наліво
   tl.fromTo(
     horizontal,
     {
@@ -270,7 +258,6 @@ Animation.buildCurvedLine = function (groupEl, baseDelay = 0) {
     "-=0.4",
   );
 
-  // 3. Кути – плавно з’являються
   tl.from(
     corners,
     {
