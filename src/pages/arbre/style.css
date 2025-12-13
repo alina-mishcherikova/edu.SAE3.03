@@ -8,6 +8,7 @@ slot {
   height: 100%;
   box-sizing: border-box;
   padding: 0%;
+  position: relative;
 }
 
 #main__rect {
@@ -18,17 +19,17 @@ slot {
 }
 
 #mmi {
-  font-size: 3rem;
+  font-size: 48px;
   text-anchor: middle;
 }
 #exprimer__title {
-  font-size: 1.5rem;
+  font-size: 24px;
   font-weight: bold;
   transform-origin: center;
   transform: rotate(-90deg);
 }
 #competence__title {
-  font-size: 1.5rem;
+  font-size: 24px;
   font-weight: bold;
 }
 text {
@@ -36,12 +37,12 @@ text {
 }
 #competence__niveau,
 #competence__number {
-  font-size: 1.25rem;
+  font-size: 20px;
 }
 #scale__to,
 #scale__from,
 #scale__devider {
-  font-size: 1.375rem;
+  font-size: 22px;
 }
 #circle__stroke > path {
   fill: #f2ede7;

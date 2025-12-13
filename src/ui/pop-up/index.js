@@ -1,7 +1,7 @@
 import { htmlToDOM } from "../../lib/utils.js";
 import template from "./template.html?raw";
 
-class ArbreView {
+class PopUpView {
   constructor() {
     this.root = htmlToDOM(template);
   }
@@ -13,12 +13,9 @@ class ArbreView {
   dom() {
     return this.root;
   }
-  getCompetence() {
-    return this.root.querySelector("[data-competence]");
-  }
-
-  getLevel() {
-    return this.root.querySelector("[data-niveau]");
+  getSliderValue() {
+    return this.root.querySelector(".custom__slider");
   }
 }
-export { ArbreView };
+
+export { PopUpView };

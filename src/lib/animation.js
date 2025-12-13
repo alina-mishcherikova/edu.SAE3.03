@@ -83,10 +83,8 @@ Animation.bounce = function (element, duration = 1, height = 100) {
   });
 };
 
-Animation.dimOtherBranches = function (svgRoot, activeBranch) {
-  if (!svgRoot || !activeBranch) return;
-
-  const branches = svgRoot.querySelectorAll(
+Animation.lowerOpacityBranches = function (rootPage, activeBranch) {
+  const branches = rootPage.querySelectorAll(
     "g[data-competence]:not([data-niveau])",
   );
 
@@ -100,8 +98,6 @@ Animation.dimOtherBranches = function (svgRoot, activeBranch) {
 };
 
 Animation.resetBranchesOpacity = function (svgRoot) {
-  if (!svgRoot) return;
-
   const branches = svgRoot.querySelectorAll(
     "g[data-competence]:not([data-niveau])",
   );
@@ -113,16 +109,15 @@ Animation.resetBranchesOpacity = function (svgRoot) {
   });
 };
 
-Animation.selectNiveau = function (niveauEl, highlightColor = "#ff4d4d") {
-  if (!niveauEl) return;
-
-  const svgRoot = niveauEl.closest("svg");
+Animation.selectLevel = function (levelEl) {
+  if (!levelEl) return;
+  const svgRoot = levelEl.closest("svg");
   if (!svgRoot) return;
 
-  const prevSelected = svgRoot.querySelectorAll("[data-niveau].is-selected");
-  prevSelected.forEach((el) => {
-    el.classList.remove("is-selected");
-    const strokeGroup = el.querySelector("#circle__stroke");
+  const levelSelected = svgRoot.querySelectorAll("[data-niveau].is-selected");
+  levelSelected.forEach((level) => {
+    level.classList.remove("is-selected");
+    const strokeGroup = level.querySelector("#circle__stroke");
     if (strokeGroup) {
       gsap.to(strokeGroup.querySelectorAll("path"), {
         fill: "#f2ede7",
@@ -132,11 +127,11 @@ Animation.selectNiveau = function (niveauEl, highlightColor = "#ff4d4d") {
     }
   });
 
-  niveauEl.classList.add("is-selected");
-  const strokeGroup = niveauEl.querySelector("#circle__stroke");
+  levelEl.classList.add("is-selected");
+  const strokeGroup = levelEl.querySelector("#circle__stroke");
   if (strokeGroup) {
     gsap.to(strokeGroup.querySelectorAll("path"), {
-      fill: highlightColor,
+      fill: "#ff4d4d",
       duration: 0.2,
       ease: "power1.out",
     });

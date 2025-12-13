@@ -1,8 +1,10 @@
 /* import des styles du ou des layouts */
 @import "./layouts/root/style.css";
+@import "reset.css";
 
 /* import de polices */
 @import url("https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
 
 /* import des styles des pages */
 /* @import "./pages/svg-demo1/style.css"; */
@@ -13,6 +15,7 @@
 @import "./ui/footer/style.css";
 @import "./ui/spinner/style.css";
 @import "./ui/star/style.css";
+@import "./ui/pop-up/styles.css";
 
 :root {
   /* Primitives Tokens */
@@ -31,4 +34,5 @@
 
   /* Font Tokens */
   --font-family-base: "Pixelify Sans", sans-serif;
+  --font-ss: "Open Sans", sans-serif;
 }
