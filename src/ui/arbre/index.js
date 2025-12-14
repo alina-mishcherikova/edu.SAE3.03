@@ -13,12 +13,44 @@ class ArbreView {
   dom() {
     return this.root;
   }
-  getCompetence() {
+  getCompetence(el) {
+    if (el) {
+      const found = el.closest("[data-competence]");
+      if (found && this.root.contains(found)) return found;
+      return null;
+    }
     return this.root.querySelector("[data-competence]");
   }
 
-  getLevel() {
+  getLevel(el) {
+    if (el) {
+      const found = el.closest("[data-niveau]");
+      if (found && this.root.contains(found)) return found;
+      return null;
+    }
     return this.root.querySelector("[data-niveau]");
+  }
+
+  setScaleValue(competenceName, levelNumber, value) {
+    const selector = `[data-competence="${competenceName}"][data-niveau="${levelNumber}"]`;
+    const levelGroup = this.root.querySelector(selector);
+    if (!levelGroup) return false;
+
+    const scaleText = levelGroup.querySelector("#scale__from");
+    if (scaleText) {
+      scaleText.textContent = value;
+      return true;
+    }
+    return false;
+  }
+
+  getScaleValue(competenceName, levelNumber) {
+    const selector = `[data-competence="${competenceName}"][data-niveau="${levelNumber}"]`;
+    const levelGroup = this.root.querySelector(selector);
+    if (!levelGroup) return null;
+
+    const scaleText = levelGroup.querySelector("#scale__from");
+    return scaleText ? scaleText.textContent : null;
   }
 }
 export { ArbreView };
