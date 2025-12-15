@@ -1,9 +1,9 @@
 <section class="popup">
   <div class="popup__header">
-    <h2 class="popup__title" data-popup-comp></h2>
+    <h2 class="popup__title">{{competence}}</h2>
     <ul class="competence__niveau">
       <li>Niveau :</li>
-      <li data-popup-niveau>1</li>
+      <li class="niveau">{{niveau}}</li>
     </ul>
     <svg
       width="40"
@@ -249,13 +249,5 @@
       </ul>
     </div>
   </div>
-  <section class="acs__list">
-    <ul class="ac">
-      <li class="ac__code">AC14.01</li>
-      <li class="ac__libelle">
-        Exploiter de manière autonome un environnement de développement efficace
-        et productif
-      </li>
-    </ul>
-  </section>
+  <section class="acs__list" data-acs></section>
 </section>

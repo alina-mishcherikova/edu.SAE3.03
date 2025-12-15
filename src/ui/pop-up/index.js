@@ -1,4 +1,5 @@
 import { htmlToDOM } from "../../lib/utils.js";
+import { AcsView } from "../ac/index.js";
 import template from "./template.html?raw";
 
 class PopUpView {
@@ -48,12 +49,26 @@ class PopUpView {
     if (!levelGroup) return null;
 
     const scaleText = levelGroup.querySelector("#scale__from");
-    let result;
-    if (scaleText) {
-      result = scaleText.textContent;
-    } else {
-      result = null;
+    return scaleText ? scaleText.textContent : null;
+  }
+
+  renderACs(acs) {
+    const container = this.root.querySelector("[data-acs]");
+    container.innerHTML = "";
+
+    for (const ac of acs) {
+      const view = new AcsView();
+      view.setCode(ac.code);
+      view.setLibelle(ac.libelle);
+      container.append(view.dom());
     }
+  }
+  setCompetenceTitle(title) {
+    this.root.querySelector(".popup__title").textContent = title;
+  }
+
+  setNiveauLabel(label) {
+    this.root.querySelector(".niveau").textContent = label;
   }
 }
 

@@ -112,17 +112,18 @@
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.25rem;
 }
 .ac__code {
-  font-size: 1.5rem;
+  font-size: 1rem;
   color: #f2ede7;
   font-family: var(--font-family-base);
 }
 .ac__libelle {
   color: #f2ede7;
   font-family: var(--font-ss);
-  font-size: 1rem;
+  font-size: 0.8rem;
+  line-height: 130%;
 }
 .popup {
   display: flex;

@@ -5,6 +5,49 @@ import template from "./template.html?raw";
 import { Animation } from "../../lib/animation";
 import { PopUpView } from "@/ui/pop-up";
 
+let M = {};
+
+let response = await fetch("/src/data/data.json");
+
+M.competenceData = await response.json();
+
+M.getAcs = function (competenceId, niveauId) {
+  for (let id in M.competenceData) {
+    const competence = M.competenceData[id];
+    if (competence.nom_court.toLowerCase() === competenceId) {
+      for (let n of competence.niveaux) {
+        if (n.ordre == niveauId) {
+          return n.acs;
+        }
+      }
+    }
+  }
+  return [];
+};
+
+M.getCompetenceName = function (competenceId) {
+  for (let id in M.competenceData) {
+    const competence = M.competenceData[id];
+    if (competence.nom_court.toLowerCase() === competenceId) {
+      return competence.nom_court;
+    }
+  }
+
+  return competenceId;
+};
+
+M.getNiveauLabel = function (competenceId, niveauId) {
+  for (let id in M.competenceData) {
+    const competence = M.competenceData[id];
+
+    if (competence.nom_court.toLowerCase() === competenceId) {
+      return competence.niveaux[niveauId - 1].ordre;
+    }
+  }
+
+  return niveauId;
+};
+
 let C = {};
 
 C.init = function () {
@@ -103,11 +146,6 @@ V.showPopUp = function (level, ev) {
 
   V.rootPage.appendChild(V.currentPopup);
 
-  V.currentPopup.querySelector("[data-popup-comp]").textContent =
-    V.currentCompetence;
-  V.currentPopup.querySelector("[data-popup-niveau]").textContent =
-    V.currentLevel;
-
   V.currentPopup.classList.add("is-open");
 
   if (ev?.clientX != null && ev?.clientY != null) {
@@ -126,6 +164,15 @@ V.showPopUp = function (level, ev) {
     V.currentPopup.style.left = left + "px";
     V.currentPopup.style.top = top + "px";
   }
+
+  const acs = M.getAcs(V.currentCompetence, V.currentLevel);
+  V.popupView.renderACs(acs);
+
+  const competenceName = M.getCompetenceName(V.currentCompetence);
+  const niveauLabel = M.getNiveauLabel(V.currentCompetence, V.currentLevel);
+
+  V.popupView.setCompetenceTitle(competenceName);
+  V.popupView.setNiveauLabel(niveauLabel);
 };
 
 V.closePopUp = function () {
