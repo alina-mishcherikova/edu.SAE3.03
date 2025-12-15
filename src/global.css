@@ -19,18 +19,73 @@
 
 :root {
   /* Primitives Tokens */
-  --color-neutral-100: #ffffff;
-  --color-neutral-900: #1a1a1a;
-  --color-blue-500: #3b82f6;
-  --color-green-500: #10b981;
-  --color-red-500: #ef4444;
 
+  /*exprimer*/
+  --color-exprimer-10: #251433;
+  --color-exprimer-20: #332232;
+  --color-exprimer-30: #412f31;
+  --color-exprimer-40: #4f3b2f;
+  --color-exprimer-50: #5e492e;
+  --color-exprimer-60: #6b562d;
+  --color-exprimer-70: #79632d;
+  --color-exprimer-80: #88702b;
+  --color-exprimer-90: #957e2a;
+  --color-exprimer-100: #a38b29;
+
+  /*comprendre*/
+  --color-comprendre-10: #250a33;
+  --color-comprendre-20: #330e32;
+  --color-comprendre-30: #411131;
+  --color-comprendre-40: #4f142f;
+  --color-comprendre-50: #5d182e;
+  --color-comprendre-60: #6b1c2e;
+  --color-comprendre-70: #791f2d;
+  --color-comprendre-80: #87222b;
+  --color-comprendre-90: #95262a;
+  --color-comprendre-100: #a32929;
+
+  /*concevoir*/
+  --color-concevoir-10: #251033;
+  --color-concevoir-20: #331a32;
+  --color-concevoir-30: #412231;
+  --color-concevoir-40: #4f2b2f;
+  --color-concevoir-50: #5d352e;
+  --color-concevoir-60: #6b3e2e;
+  --color-concevoir-70: #79472d;
+  --color-concevoir-80: #874f2b;
+  --color-concevoir-90: #95592a;
+  --color-concevoir-100: #a36229;
+
+  /*développer*/
+  --color-développer-10: #1f1633;
+  --color-développer-20: #262732;
+  --color-développer-30: #2e3631;
+  --color-développer-40: #36452f;
+  --color-développer-50: #3e552e;
+  --color-développer-60: #46652e;
+  --color-développer-70: #4e742d;
+  --color-développer-80: #56832b;
+  --color-développer-90: #5d942a;
+  --color-développer-100: #65a329;
+
+  /*entreprendre*/
+  --color-entreprendre-10: #190d3f;
+  --color-entreprendre-20: #1a154b;
+  --color-entreprendre-30: #211e5d;
+  --color-entreprendre-40: #1e2160;
+  --color-entreprendre-50: #20286b;
+  --color-entreprendre-60: #222f77;
+  --color-entreprendre-70: #243582;
+  --color-entreprendre-80: #263b8c;
+  --color-entreprendre-90: #274398;
+  --color-entreprendre-100: #2949a3;
+
+  /*neutral*/
+  --color-white: #f2ede7;
+  --color-gray: #413559;
   /* Semantics Tokens*/
   --color-bg: var(--color-neutral-100);
-  --color-fg: var(--color-neutral-900);
-  --color-primary: var(--color-blue-500);
-  --color-success: var(--color-green-500);
-  --color-danger: var(--color-red-500);
+  --color-fg: var(--color-white);
 
   /* Font Tokens */
   --font-family-base: "Pixelify Sans", sans-serif;

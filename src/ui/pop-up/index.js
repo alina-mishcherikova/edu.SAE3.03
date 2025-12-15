@@ -14,6 +14,45 @@ class PopUpView {
   dom() {
     return this.root;
   }
+
+  pop(parentEl) {
+    if (!this.root.isConnected) parentEl.appendChild(this.root);
+    this.root.classList.add("is-open");
+  }
+
+  close() {
+    if (!this.root) return;
+    this.root.classList.remove("is-open");
+    if (this.root.parentNode) this.root.parentNode.removeChild(this.root);
+  }
+
+  placeNearCursor(ev) {
+    if (!ev || ev.clientX == null || ev.clientY == null) return;
+
+    const margin = 8;
+    const rect = this.root.getBoundingClientRect();
+
+    const left = Math.min(
+      ev.clientX + 20,
+      window.innerWidth - rect.width - margin,
+    );
+    const top = Math.min(
+      ev.clientY + 20,
+      window.innerHeight - rect.height - margin,
+    );
+
+    this.root.style.left = left + "px";
+    this.root.style.top = top + "px";
+  }
+
+  bind(onClose, onSliderInput) {
+    const btn = this.root.querySelector(".popup__close");
+    if (btn) btn.addEventListener("click", onClose);
+
+    const slider = this.getSliderElement();
+    if (slider) slider.addEventListener("input", onSliderInput);
+  }
+
   getSliderValue() {
     const slider = this.root.querySelector(".custom__slider");
     return slider ? parseInt(slider.value, 10) : null;
@@ -63,6 +102,7 @@ class PopUpView {
       container.append(view.dom());
     }
   }
+
   setCompetenceTitle(title) {
     this.root.querySelector(".popup__title").textContent = title;
   }

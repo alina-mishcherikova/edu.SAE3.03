@@ -5,6 +5,8 @@ import template from "./template.html?raw";
 import { Animation } from "../../lib/animation";
 import { PopUpView } from "@/ui/pop-up";
 
+const STORAGE_KEY = "progress_v1";
+
 let M = {};
 
 let response = await fetch("/src/data/data.json");
@@ -48,6 +50,55 @@ M.getNiveauLabel = function (competenceId, niveauId) {
   return niveauId;
 };
 
+M.getCompetenceColorCode = function (competenceId) {
+  for (let id in M.competenceData) {
+    const c = M.competenceData[id];
+    if (c.nom_court.toLowerCase() === competenceId) {
+      return c.couleur;
+    }
+  }
+};
+
+//pour ajouter tout les données
+M.state = {};
+
+M.setProgress = function (competenceId, niveauId, value) {
+  if (M.state[competenceId] === undefined) {
+    M.state[competenceId] = {};
+  }
+  M.state[competenceId][niveauId] = value;
+};
+
+M.getProgress = function (competenceId, niveauId) {
+  if (M.state[competenceId] === undefined) return 0;
+  const v = M.state[competenceId][niveauId];
+  if (v === undefined || v === null) return 0;
+  return v;
+};
+
+M.saveProgress = function () {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(M.state));
+};
+
+M.loadProgress = function () {
+  // Récupère les données sauvegardées dans le localStorage
+  const data = localStorage.getItem(STORAGE_KEY);
+
+  // S'il n'y a aucune donnée sauvegardée, on initialise un état vide
+  if (data === null) {
+    M.state = {};
+    return;
+  }
+  try {
+    // On transforme la chaîne JSON en objet JavaScript
+    M.state = JSON.parse(data);
+  } catch (e) {
+    // Si le JSON est invalide ou corrompu,
+    // on réinitialise l'état pour éviter une erreur bloquante
+    M.state = {};
+  }
+};
+
 let C = {};
 
 C.init = function () {
@@ -78,14 +129,30 @@ C.handler_leaveCompetence = function () {
 let V = {
   rootPage: null,
   popUp: null,
-  competenceRating: null,
   currentCompetence: null,
   currentLevel: null,
 };
 
 V.handler_sliderChange = function (ev) {
-  const value = Math.ceil(ev.target.value / 5) * 5;
+  const value = Math.ceil(ev.target.value / 10) * 10;
+  M.setProgress(V.currentCompetence, V.currentLevel, value);
   V.arbre.setScaleValue(V.currentCompetence, V.currentLevel, value);
+
+  const couleur = M.getCompetenceColorCode(V.currentCompetence);
+  const colorName = competenceColorName(couleur);
+
+  const step = value;
+  const cssVar = `var(--color-${colorName}-${step})`;
+
+  let finalFill;
+  if (value === 0) {
+    finalFill = "var(--color-gray)";
+  } else {
+    finalFill = cssVar;
+  }
+  V.arbre.setIconFill(V.currentCompetence, V.currentLevel, finalFill);
+
+  M.saveProgress();
 };
 
 V.init = function () {
@@ -93,6 +160,14 @@ V.init = function () {
   V.arbre = new ArbreView();
 
   V.rootPage.querySelector('slot[name="svg"]').replaceWith(V.arbre.dom());
+
+  M.loadProgress();
+
+  for (let compId in M.state) {
+    for (let niveauId in M.state[compId]) {
+      applyProgress(compId, niveauId, M.state[compId][niveauId]);
+    }
+  }
 
   V.attachEvents();
   V.animations();
@@ -126,60 +201,49 @@ V.showPopUp = function (level, ev) {
 
   if (!V.popupView) {
     V.popupView = new PopUpView();
-    V.currentPopup = V.popupView.dom();
-    V.currentPopup
-      .querySelector(".popup__close")
-      .addEventListener("click", V.closePopUp);
-
-    const slider = V.popupView.getSliderElement();
-    if (slider) {
-      slider.addEventListener("input", V.handler_sliderChange);
-    }
+    V.popupView.bind(V.closePopUp, V.handler_sliderChange);
   }
 
-  const existingValue = V.arbre.getScaleValue(
-    V.currentCompetence,
-    V.currentLevel,
-  );
-
+  const existingValue = M.getProgress(V.currentCompetence, V.currentLevel);
   V.popupView.setSliderValue(existingValue);
 
-  V.rootPage.appendChild(V.currentPopup);
-
-  V.currentPopup.classList.add("is-open");
-
-  if (ev?.clientX != null && ev?.clientY != null) {
-    const margin = 8;
-    const rect = V.currentPopup.getBoundingClientRect();
-
-    const left = Math.min(
-      ev.clientX + 20,
-      window.innerWidth - rect.width - margin,
-    );
-    const top = Math.min(
-      ev.clientY + 20,
-      window.innerHeight - rect.height - margin,
-    );
-
-    V.currentPopup.style.left = left + "px";
-    V.currentPopup.style.top = top + "px";
-  }
-
   const acs = M.getAcs(V.currentCompetence, V.currentLevel);
-  V.popupView.renderACs(acs);
-
   const competenceName = M.getCompetenceName(V.currentCompetence);
   const niveauLabel = M.getNiveauLabel(V.currentCompetence, V.currentLevel);
 
+  V.popupView.setSliderValue(existingValue);
+  V.popupView.renderACs(acs);
   V.popupView.setCompetenceTitle(competenceName);
   V.popupView.setNiveauLabel(niveauLabel);
+
+  V.popupView.pop(V.rootPage);
+  V.popupView.placeNearCursor(ev);
 };
 
 V.closePopUp = function () {
-  if (!V.currentPopup) return;
-  V.currentPopup.classList.remove("is-open");
-  V.rootPage.removeChild(V.currentPopup);
+  if (V.popupView) V.popupView.close();
 };
+
+function competenceColorName(couleur) {
+  if (couleur === "c1") return "comprendre";
+  if (couleur === "c2") return "concevoir";
+  if (couleur === "c3") return "exprimer";
+  if (couleur === "c4") return "développer";
+  if (couleur === "c5") return "entreprendre";
+}
+
+function getFill(compId, value) {
+  if (value === 0) return "var(--color-gray)";
+
+  const couleur = M.getCompetenceColorCode(compId);
+  const colorName = competenceColorName(couleur);
+  return `var(--color-${colorName}-${value})`;
+}
+
+function applyProgress(compId, niveauId, value) {
+  V.arbre.setScaleValue(compId, niveauId, value);
+  V.arbre.setIconFill(compId, niveauId, getFill(compId, value));
+}
 
 export function ArbrePage() {
   return C.init();
