@@ -5,7 +5,7 @@ import template from "./template.html?raw";
 import { Animation } from "../../lib/animation";
 import { PopUpView } from "@/ui/pop-up";
 
-const STORAGE_KEY = "progress_v1";
+import { saveProgress, loadProgress } from "@/lib/storage.js";
 
 let M = {};
 
@@ -76,29 +76,6 @@ M.getProgress = function (competenceId, niveauId) {
   return v;
 };
 
-M.saveProgress = function () {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(M.state));
-};
-
-M.loadProgress = function () {
-  // Récupère les données sauvegardées dans le localStorage
-  const data = localStorage.getItem(STORAGE_KEY);
-
-  // S'il n'y a aucune donnée sauvegardée, on initialise un état vide
-  if (data === null) {
-    M.state = {};
-    return;
-  }
-  try {
-    // On transforme la chaîne JSON en objet JavaScript
-    M.state = JSON.parse(data);
-  } catch (e) {
-    // Si le JSON est invalide ou corrompu,
-    // on réinitialise l'état pour éviter une erreur bloquante
-    M.state = {};
-  }
-};
-
 let C = {};
 
 C.init = function () {
@@ -135,24 +112,22 @@ let V = {
 
 V.handler_sliderChange = function (ev) {
   const value = Math.ceil(ev.target.value / 10) * 10;
+
   M.setProgress(V.currentCompetence, V.currentLevel, value);
   V.arbre.setScaleValue(V.currentCompetence, V.currentLevel, value);
 
   const couleur = M.getCompetenceColorCode(V.currentCompetence);
   const colorName = competenceColorName(couleur);
 
-  const step = value;
-  const cssVar = `var(--color-${colorName}-${step})`;
-
+  const cssVar = `var(--color-${colorName}-${value})`;
   let finalFill;
   if (value === 0) {
     finalFill = "var(--color-gray)";
-  } else {
-    finalFill = cssVar;
-  }
+  } else finalFill = cssVar;
+
   V.arbre.setIconFill(V.currentCompetence, V.currentLevel, finalFill);
 
-  M.saveProgress();
+  saveProgress(M.state);
 };
 
 V.init = function () {
@@ -161,7 +136,7 @@ V.init = function () {
 
   V.rootPage.querySelector('slot[name="svg"]').replaceWith(V.arbre.dom());
 
-  M.loadProgress();
+  M.state = loadProgress();
 
   for (let compId in M.state) {
     for (let niveauId in M.state[compId]) {
