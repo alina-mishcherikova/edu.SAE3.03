@@ -6,6 +6,15 @@ import { Animation } from "../../lib/animation";
 import { PopUpView } from "@/ui/pop-up";
 
 import { saveProgress, loadProgress } from "@/lib/storage.js";
+import { loadHistory, saveHistory } from "@/lib/storage.js";
+
+import {
+  competenceColorName,
+  applyProgress,
+  canEvaluateLevel,
+  isLevel3Locked,
+  applyLocksForAllCompetences,
+} from "@/lib/functions.js";
 
 let M = {};
 
@@ -61,6 +70,7 @@ M.getCompetenceColorCode = function (competenceId) {
 
 //pour ajouter tout les données
 M.state = {};
+M.history = {};
 
 M.setProgress = function (competenceId, niveauId, value) {
   if (M.state[competenceId] === undefined) {
@@ -74,6 +84,15 @@ M.getProgress = function (competenceId, niveauId) {
   const v = M.state[competenceId][niveauId];
   if (v === undefined || v === null) return 0;
   return v;
+};
+
+M.addHistory = function (competenceId, niveauId, value) {
+  M.history.push({
+    date: new Date().toISOString(),
+    competenceId,
+    niveauId,
+    value,
+  });
 };
 
 let C = {};
@@ -127,7 +146,14 @@ V.handler_sliderChange = function (ev) {
 
   V.arbre.setIconFill(V.currentCompetence, V.currentLevel, finalFill);
 
+  const lock = isLevel3Locked(M, V.currentCompetence);
+  V.arbre.setLocked(V.currentCompetence, 3, lock);
+
   saveProgress(M.state);
+
+  M.addHistory(V.currentCompetence, V.currentLevel, value);
+
+  saveHistory(M.history);
 };
 
 V.init = function () {
@@ -137,12 +163,15 @@ V.init = function () {
   V.rootPage.querySelector('slot[name="svg"]').replaceWith(V.arbre.dom());
 
   M.state = loadProgress();
+  M.history = loadHistory();
 
   for (let compId in M.state) {
     for (let niveauId in M.state[compId]) {
-      applyProgress(compId, niveauId, M.state[compId][niveauId]);
+      applyProgress(M, V, compId, niveauId, M.state[compId][niveauId]);
     }
   }
+
+  applyLocksForAllCompetences(M, V);
 
   V.attachEvents();
   V.animations();
@@ -174,6 +203,14 @@ V.showPopUp = function (level, ev) {
   V.currentCompetence = competenceEl.getAttribute("data-competence");
   V.currentLevel = level.getAttribute("data-niveau");
 
+  if (!canEvaluateLevel(M, V.currentCompetence, V.currentLevel)) {
+    V.showLockMessage(
+      ev,
+      "Accès au Niveau 3 : Pour déverrouiller l'évaluation du Niveau 3, vous devez obtenir un score cumulé d'au moins 50 % sur l'ensemble des Niveaux 1 et 2. Finalisez les évaluations précédentes. Le Niveau 3 sera alors automatiquement accessible.",
+    );
+    return;
+  }
+
   if (!V.popupView) {
     V.popupView = new PopUpView();
     V.popupView.bind(V.closePopUp, V.handler_sliderChange);
@@ -186,8 +223,17 @@ V.showPopUp = function (level, ev) {
   const competenceName = M.getCompetenceName(V.currentCompetence);
   const niveauLabel = M.getNiveauLabel(V.currentCompetence, V.currentLevel);
 
-  V.popupView.setSliderValue(existingValue);
   V.popupView.renderACs(acs);
+  const historyForLevel = M.history
+    .filter(
+      (h) =>
+        h.competenceId === V.currentCompetence && h.niveauId === V.currentLevel,
+    )
+    .slice(-10)
+    .reverse();
+
+  V.popupView.renderHistory(historyForLevel);
+
   V.popupView.setCompetenceTitle(competenceName);
   V.popupView.setNiveauLabel(niveauLabel);
 
@@ -199,26 +245,31 @@ V.closePopUp = function () {
   if (V.popupView) V.popupView.close();
 };
 
-function competenceColorName(couleur) {
-  if (couleur === "c1") return "comprendre";
-  if (couleur === "c2") return "concevoir";
-  if (couleur === "c3") return "exprimer";
-  if (couleur === "c4") return "développer";
-  if (couleur === "c5") return "entreprendre";
-}
+V.showLockMessage = function (ev, text) {
+  const msg = document.createElement("div");
+  msg.className = "lock-message";
+  msg.textContent = text;
 
-function getFill(compId, value) {
-  if (value === 0) return "var(--color-gray)";
+  V.rootPage.appendChild(msg);
 
-  const couleur = M.getCompetenceColorCode(compId);
-  const colorName = competenceColorName(couleur);
-  return `var(--color-${colorName}-${value})`;
-}
+  let x = 20;
+  let y = 20;
 
-function applyProgress(compId, niveauId, value) {
-  V.arbre.setScaleValue(compId, niveauId, value);
-  V.arbre.setIconFill(compId, niveauId, getFill(compId, value));
-}
+  if (ev && ev.clientX !== undefined) {
+    x = ev.clientX;
+  }
+
+  if (ev && ev.clientY !== undefined) {
+    y = ev.clientY;
+  }
+
+  msg.style.left = x + 16 + "px";
+  msg.style.top = y + 16 + "px";
+
+  setTimeout(() => {
+    if (msg.parentNode) msg.parentNode.removeChild(msg);
+  }, 2000);
+};
 
 export function ArbrePage() {
   return C.init();

@@ -83,8 +83,10 @@
   /*neutral*/
   --color-white: #f2ede7;
   --color-gray: #413559;
+  --color-dark: #29154d;
+  --color-darker: #231045;
   /* Semantics Tokens*/
-  --color-bg: var(--color-neutral-100);
+  --color-bg: var(--color-dark);
   --color-fg: var(--color-white);
 
   /* Font Tokens */

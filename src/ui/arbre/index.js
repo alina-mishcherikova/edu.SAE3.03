@@ -64,5 +64,19 @@ class ArbreView {
     fillPath.setAttribute("fill", fillValue);
     return true;
   }
+
+  setLocked(competenceName, levelNumber, locked) {
+    const selector = `[data-competence="${competenceName}"][data-niveau="${levelNumber}"]`;
+    const levelGroup = this.root.querySelector(selector);
+    if (!levelGroup) return false;
+
+    if (locked) {
+      levelGroup.classList.add("is-locked");
+    } else {
+      levelGroup.classList.remove("is-locked");
+    }
+
+    return true;
+  }
 }
 export { ArbreView };

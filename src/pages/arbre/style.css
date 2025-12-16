@@ -1,11 +1,15 @@
+.root-main {
+  background-color: var(--color-bg);
+  padding: 0;
+}
 slot {
   display: block;
   width: 100%;
-  height: 100%;
+  height: 80%;
 }
 .arbre-container {
   width: 100%;
-  height: 100%;
+  height: 80%;
   box-sizing: border-box;
   padding: 0%;
   position: relative;
@@ -49,4 +53,19 @@ text {
 }
 [data-niveau].is-selected #circle__stroke > path {
   fill: #ff4d4d;
+}
+.is-locked {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.lock-message {
+  position: fixed;
+  z-index: 9999;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(20, 20, 20, 0.92);
+  color: white;
+  font-size: 12px;
+  max-width: 260px;
+  pointer-events: none;
 }

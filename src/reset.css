@@ -127,3 +127,8 @@ table {
   border-collapse: collapse;
   border-spacing: 0;
 }
+
+html {
+  cursor: url("./icons/cursor.svg"), auto;
+  cursor: url("./icons/cursor.svg"), pointer;
+}
