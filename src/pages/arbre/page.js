@@ -164,6 +164,7 @@ V.init = function () {
 
   M.state = loadProgress();
   M.history = loadHistory();
+  console.log(M.history);
 
   for (let compId in M.state) {
     for (let niveauId in M.state[compId]) {
@@ -224,13 +225,19 @@ V.showPopUp = function (level, ev) {
   const niveauLabel = M.getNiveauLabel(V.currentCompetence, V.currentLevel);
 
   V.popupView.renderACs(acs);
-  const historyForLevel = M.history
-    .filter(
-      (h) =>
-        h.competenceId === V.currentCompetence && h.niveauId === V.currentLevel,
-    )
-    .slice(-10)
-    .reverse();
+
+  const historyForLevel = [];
+
+  for (let i = 0; i < M.history.length; i++) {
+    const h = M.history[i];
+
+    if (
+      h.competenceId === V.currentCompetence &&
+      h.niveauId === V.currentLevel
+    ) {
+      historyForLevel.push(h);
+    }
+  }
 
   V.popupView.renderHistory(historyForLevel);
 
