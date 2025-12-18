@@ -6,14 +6,19 @@
 }
 
 .popup {
-  position: absolute;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
   display: flex;
-  width: 400px;
-  flex-direction: column;
-  align-items: flex-start;
-  background-color: rgb(16, 1, 37);
+  width: 600px;
   height: 600px;
+  flex-direction: column;
+  align-items: flex-end;
+  background-color: rgb(16, 1, 37);
   overflow-y: auto;
+  z-index: 1000;
 }
 
 .popup::-webkit-scrollbar {
@@ -36,10 +41,11 @@
 .popup__header {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: start;
   gap: 0.5rem;
-  padding: 1.25rem 0.75rem 0 0.75rem;
+  padding: 0 1.25rem 0 1.25rem;
   align-self: stretch;
+  margin-bottom: 1rem;
 }
 
 .competence__niveau,
@@ -56,14 +62,24 @@
   align-items: flex-start;
   gap: 0.75rem;
 }
-
+.niveau {
+  padding-left: 0.2rem;
+}
+.competence__niveau {
+  flex-direction: column;
+}
+li {
+  display: flex;
+  flex-direction: row;
+}
 .popup__close {
   position: sticky;
-  display: flex;
-  width: 95%;
-  justify-content: flex-end;
+  width: fit-content;
+  background-color: rgb(16, 1, 37);
+  z-index: 1;
   top: 1rem;
   right: 2rem;
+  border-radius: 2rem;
   cursor: pointer;
 }
 .popup__close svg {
@@ -131,26 +147,34 @@
   padding: 1rem 1.25rem 1.25rem 1.25rem;
   flex-direction: column;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 1.5rem;
   background-color: #2c273e;
   align-self: stretch;
 }
 .ac {
   list-style: none;
   display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  flex-direction: row;
+  gap: 1.5rem;
+  align-self: stretch;
 }
 .ac__code {
   font-size: 1rem;
   color: #f2ede7;
   font-family: var(--font-family-base);
 }
+.ac__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 370px;
+}
 .ac__libelle {
   color: #f2ede7;
   font-family: var(--font-ss);
   font-size: 0.8rem;
   line-height: 130%;
+  width: 100%;
 }
 .history {
   font-family: var(--font-family-base);
@@ -195,4 +219,33 @@
 .dropdown__button {
   width: 1.5rem;
   height: 1.5rem;
+}
+
+.ac__slider {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+}
+button {
+  border: none;
+  background: none;
+  padding: 0;
+  position: relative;
+  height: 30px;
+  width: 55px;
+  color: var(--color-fg);
+}
+
+.button__validate:hover {
+  color: var(--color-hover);
+}
+.button__validate:focus {
+  color: var(--color-pressed);
+}
+.button__frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
 }

@@ -1,36 +1,16 @@
-const STORAGE_KEY = "progress_v1";
-const HISTORY_KEY = "history_v1";
+const USER_KEY = "user_v1";
 
-export function saveProgress(state) {
-  //acces au Storage
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+export function saveUserPayload(payload) {
+  localStorage.setItem(USER_KEY, JSON.stringify(payload));
 }
 
-export function loadProgress() {
-  const data = localStorage.getItem(STORAGE_KEY);
-
-  if (data === null) {
-    return {};
-  }
+export function loadUserPayload() {
+  const data = localStorage.getItem(USER_KEY);
+  if (!data) return null;
 
   try {
-    return JSON.parse(data) || {};
+    return JSON.parse(data);
   } catch (e) {
-    return {};
+    return null;
   }
-}
-
-export function loadHistory() {
-  const data = localStorage.getItem(HISTORY_KEY);
-  if (!data) return [];
-
-  try {
-    return JSON.parse(data) || [];
-  } catch (e) {
-    return {};
-  }
-}
-
-export function saveHistory(history) {
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
 }

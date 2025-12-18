@@ -236,26 +236,16 @@
       <h2 class="popup__title">{{competence}}</h2>
 
       <ul class="competence__niveau">
-        <li>Niveau :</li>
-        <li class="niveau">{{niveau}}</li>
+        <li>
+          Niveau :
+          <p class="niveau">{{niveau}}</p>
+        </li>
+        <li>
+          <p>Cette compétence est complétée à</p>
+          <p class="niveau" data-competence-evaluation>20</p>
+          <p>% sur 100%</p>
+        </li>
       </ul>
-
-      <div class="popup__slider">
-        <input
-          class="custom__slider"
-          type="range"
-          min="0"
-          max="90"
-          value="10"
-          id="competenceSlider"
-          data-popup-slider
-        />
-        <ul class="slider__values">
-          <li>0%</li>
-          <li>50%</li>
-          <li>100%</li>
-        </ul>
-      </div>
     </div>
     <section class="acs__list" data-acs></section>
 

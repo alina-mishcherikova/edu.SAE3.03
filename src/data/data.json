@@ -1,5 +1,5 @@
-{
-  "688548e4666873aa7a49491ba88a7271": {
+[
+  {
     "nom_court": "Comprendre",
     "numero": 1,
     "numero_identifiant": 1,
@@ -78,7 +78,7 @@
       }
     ]
   },
-  "786d957f2fd89908751ca0ea0a835a37": {
+  {
     "nom_court": "Concevoir",
     "numero": 2,
     "numero_identifiant": 2,
@@ -173,7 +173,7 @@
       }
     ]
   },
-  "6a5a25b106187717ff27758e789dbde8": {
+  {
     "nom_court": "Exprimer",
     "numero": 3,
     "numero_identifiant": 3,
@@ -284,7 +284,7 @@
       }
     ]
   },
-  "bdeb25b7e21ebc4dc5f3c0f97db7285e": {
+  {
     "nom_court": "Développer",
     "numero": 4,
     "numero_identifiant": 4,
@@ -395,7 +395,7 @@
       }
     ]
   },
-  "689e945289af4e30650a910291c38e8a": {
+  {
     "nom_court": "Entreprendre",
     "numero": 5,
     "numero_identifiant": 5,
@@ -506,4 +506,4 @@
       }
     ]
   }
-}
+]

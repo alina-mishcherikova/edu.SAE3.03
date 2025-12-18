@@ -27,72 +27,31 @@ class PopUpView {
     if (this.root.parentNode) this.root.parentNode.removeChild(this.root);
   }
 
-  placeNearCursor(ev) {
-    if (!ev || ev.clientX == null || ev.clientY == null) return;
+  bind(onClose, onValidateClick) {
+    if (this._isBound) return;
+    this._isBound = true;
 
-    const margin = 8;
-    const rect = this.root.getBoundingClientRect();
-
-    const left = Math.min(
-      ev.clientX + 20,
-      window.innerWidth - rect.width - margin,
-    );
-    const top = Math.min(
-      ev.clientY + 20,
-      window.innerHeight - rect.height - margin,
-    );
-
-    this.root.style.left = left + "px";
-    this.root.style.top = top + "px";
-  }
-
-  bind(onClose, onSliderInput) {
     const btn = this.root.querySelector(".popup__close");
-    if (btn) btn.addEventListener("click", onClose);
-
-    const slider = this.getSliderElement();
-    if (slider) slider.addEventListener("input", onSliderInput);
+    if (btn && onClose) {
+      btn.addEventListener("click", onClose);
+    }
 
     const toggle = this.root.querySelector("[data-history-toggle]");
-    if (toggle) toggle.addEventListener("click", () => this.toggleHistory());
-  }
-
-  getSliderValue() {
-    const slider = this.root.querySelector(".custom__slider");
-    return slider ? parseInt(slider.value, 10) : null;
-  }
-
-  getSliderElement() {
-    return this.root.querySelector(".custom__slider");
-  }
-
-  setSliderValue(value) {
-    const slider = this.root.querySelector(".custom__slider");
-    if (slider) {
-      slider.value = value;
+    if (toggle) {
+      toggle.addEventListener("click", () => this.toggleHistory());
     }
-  }
 
-  setScaleValue(competenceName, levelNumber, value) {
-    const selector = `[data-competence="${competenceName}"][data-niveau="${levelNumber}"]`;
-    const levelGroup = this.root.querySelector(selector);
-    if (!levelGroup) return false;
+    this.root.addEventListener("click", (ev) => {
+      const validateBtn = ev.target.closest("[data-button-validate]");
+      if (!validateBtn) return;
 
-    const scaleText = levelGroup.querySelector("#scale__from");
-    if (scaleText) {
-      scaleText.textContent = value;
-      return true;
-    }
-    return false;
-  }
+      const acEl = validateBtn.closest(".ac");
+      if (!acEl) return;
 
-  getScaleValue(competenceName, levelNumber) {
-    const selector = `[data-competence="${competenceName}"][data-niveau="${levelNumber}"]`;
-    const levelGroup = this.root.querySelector(selector);
-    if (!levelGroup) return null;
-
-    const scaleText = levelGroup.querySelector("#scale__from");
-    return scaleText ? scaleText.textContent : null;
+      if (onValidateClick) {
+        onValidateClick(acEl, ev);
+      }
+    });
   }
 
   renderACs(acs) {
@@ -107,12 +66,48 @@ class PopUpView {
     }
   }
 
+  getAcSliderValue(acEl) {
+    const slider = acEl.querySelector("[data-popup-slider]");
+    const n = +slider.value;
+    return n;
+  }
+
+  getAllSliderValues() {
+    const sliders = this.root.querySelectorAll("[data-popup-slider]");
+    const values = [];
+
+    for (let i = 0; i < sliders.length; i++) {
+      values.push(+sliders[i].value);
+    }
+    return values;
+  }
+
+  setAcSliderValue(acEl, value) {
+    const slider = acEl.querySelector("[data-popup-slider]");
+    const n = +value;
+    slider.value = n;
+  }
+
+  setCompetenceEvaluation(value) {
+    const el = this.root.querySelector("[data-competence-evaluation]");
+    if (el) {
+      el.textContent = String(value);
+    }
+  }
+
   setCompetenceTitle(title) {
     this.root.querySelector(".popup__title").textContent = title;
   }
 
   setNiveauLabel(label) {
     this.root.querySelector(".niveau").textContent = label;
+  }
+
+  getAcCode(acEl) {
+    const el = acEl.querySelector(".ac__code");
+    if (el) {
+      return el.textContent.trim();
+    } else return "";
   }
 
   renderHistory(items) {
@@ -124,15 +119,19 @@ class PopUpView {
 
     if (!items || items.length === 0) {
       empty.textContent = "Jusqu’à présent, l’histoire n’a pas été préservée.";
+      empty.style.display = "block";
     } else {
+      empty.style.display = "none";
       for (const item of items) {
         const li = document.createElement("li");
         li.className = "history__item";
-        li.textContent = `Auto-évaluation fixée à ${item.value}% à ${new Date(item.date).toLocaleTimeString()}`;
+        li.textContent =
+          `${item.competenceName || item.competenceId} — ${item.acCode} : ` +
+          `${item.value}% (à ${new Date(item.date).toLocaleTimeString()})`;
+
         container.appendChild(li);
       }
     }
-    this.isHistoryOpen = false;
     this.updateHistoryVisibility();
   }
 

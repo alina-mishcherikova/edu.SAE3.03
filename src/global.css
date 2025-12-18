@@ -85,6 +85,8 @@
   --color-gray: #413559;
   --color-dark: #29154d;
   --color-darker: #231045;
+  --color-hover: rgba(137, 104, 234, 0.5);
+  --color-pressed: rgba(137, 104, 234, 1);
   /* Semantics Tokens*/
   --color-bg: var(--color-dark);
   --color-fg: var(--color-white);

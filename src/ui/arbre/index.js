@@ -44,19 +44,6 @@ class ArbreView {
     return false;
   }
 
-  getScaleValue(competenceName, levelNumber) {
-    const selector = `[data-competence="${competenceName}"][data-niveau="${levelNumber}"]`;
-    const levelGroup = this.root.querySelector(selector);
-    if (!levelGroup) return null;
-
-    const scaleText = levelGroup.querySelector("#scale__from");
-    if (!scaleText) {
-      return null;
-    }
-
-    return scaleText.textContent;
-  }
-
   setIconFill(competenceName, levelNumber, fillValue) {
     const selector = `[data-competence="${competenceName}"][data-niveau="${levelNumber}"]`;
     const levelGroup = this.root.querySelector(selector);

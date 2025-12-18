@@ -1,4 +1,81 @@
-<ul class="ac">
-  <li class="ac__code">{{ac__code}}</li>
-  <li class="ac__libelle">{{ac__libelle}}</li>
+<ul class="ac" data-ac="{{ac__code}}">
+  <li class="ac__info">
+    <div class="ac__code">{{ac__code}}</div>
+    <div class="ac__libelle">{{ac__libelle}}</div>
+  </li>
+
+  <li class="ac__slider">
+    <div class="popup__slider">
+      <input
+        class="custom__slider"
+        type="range"
+        min="0"
+        max="100"
+        step="10"
+        value="0"
+        data-popup-slider
+      />
+      <ul class="slider__values">
+        <li>0%</li>
+        <li>50%</li>
+        <li>100%</li>
+      </ul>
+    </div>
+    <button data-button-validate class="button__validate">
+      Valider
+      <svg
+        width="57"
+        height="30"
+        viewBox="0 0 57 30"
+        class="button__frame"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <rect y="3" width="1" height="24" fill="#F2EDE7" />
+        <rect x="56" y="3" width="1" height="24" fill="#F2EDE7" />
+        <rect
+          x="3"
+          y="1"
+          width="0.999999"
+          height="51"
+          transform="rotate(-90 3 1)"
+          fill="#F2EDE7"
+        />
+        <rect
+          x="3"
+          y="30"
+          width="0.999999"
+          height="51"
+          transform="rotate(-90 3 30)"
+          fill="#F2EDE7"
+        />
+        <rect x="55" y="27" width="1" height="1" fill="#F2EDE7" />
+        <rect
+          width="1"
+          height="1"
+          transform="matrix(-1 0 0 1 2 27)"
+          fill="#F2EDE7"
+        />
+        <rect
+          width="1"
+          height="1"
+          transform="matrix(-1 0 0 1 2 2)"
+          fill="#F2EDE7"
+        />
+        <rect x="55" y="2" width="1" height="1" fill="#F2EDE7" />
+        <rect x="54" y="28" width="1" height="1" fill="#F2EDE7" />
+        <rect
+          width="1"
+          height="1"
+          transform="matrix(-1 0 0 1 3 28)"
+          fill="#F2EDE7"
+        />
+        <rect
+          width="1"
+          height="1"
+          transform="matrix(-1 0 0 1 3 1)"
+          fill="#F2EDE7"
+        />
+      </svg>
+    </button>
+  </li>
 </ul>
