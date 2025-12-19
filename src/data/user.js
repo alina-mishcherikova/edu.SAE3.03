@@ -138,6 +138,7 @@ class User {
     this.progress = {};
     this.history = [];
     this.acProgress = {};
+    this.proofs = {};
     this.save();
   }
 
