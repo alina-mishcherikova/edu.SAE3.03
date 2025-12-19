@@ -1,4 +1,4 @@
-import { htmlToDOM } from "../../lib/utils.js";
+import { htmlToDOM } from "@/lib/utils.js";
 import template from "./template.html?raw";
 
 class AcsView {

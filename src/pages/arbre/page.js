@@ -3,6 +3,7 @@ import { htmlToDOM } from "@/lib/utils.js";
 import template from "./template.html?raw";
 import { Animation } from "@/lib/animation";
 import { PopUpView } from "@/ui/pop-up";
+import { HistoryView } from "@/ui/historique";
 import {
   competenceColorName,
   applyProgress,
@@ -105,12 +106,18 @@ V.handler_sliderChange = function (acEl) {
 
   M.user.save();
 
-  const historyItems = M.user.history.filter(
-    (h) =>
-      h.competenceId === V.currentCompetence && h.niveauId === V.currentLevel,
-  );
-  const lastFive = historyItems.slice(-5).reverse();
-  V.popupView.renderHistory(lastFive);
+  if (finalValue === 100) {
+    const levelEl = V.rootPage.querySelector(
+      `g[data-competence="${V.currentCompetence}"][data-niveau="${V.currentLevel}"]`,
+    );
+
+    if (levelEl) {
+      const scaleTextGroup = levelEl.querySelector("#scale__text");
+      if (scaleTextGroup) {
+        Animation.sparkleEffect(scaleTextGroup, couleur);
+      }
+    }
+  }
 };
 
 V.init = function () {
@@ -125,25 +132,25 @@ V.init = function () {
   V.animations();
   return V.rootPage;
 };
-
 V.attachEvents = function () {
   V.rootPage.addEventListener("click", C.handler_clickCompetence);
   V.rootPage.addEventListener("pointerover", C.handler_hoverCompetence);
   V.rootPage.addEventListener("pointerout", C.handler_leaveCompetence);
 
   const btnExport = V.rootPage.querySelector("[data-export-json]");
-  if (btnExport !== null) {
-    btnExport.addEventListener("click", () => {
-      V.exportJSON();
-    });
-  }
+  btnExport.addEventListener("click", () => {
+    V.exportJSON();
+  });
 
   const btnImport = V.rootPage.querySelector("[data-import-json]");
-  if (btnImport !== null) {
-    btnImport.addEventListener("click", () => {
-      V.openImportPicker();
-    });
-  }
+  btnImport.addEventListener("click", () => {
+    V.openImportPicker();
+  });
+
+  const btnHistory = V.rootPage.querySelector("[data-history]");
+  btnHistory.addEventListener("click", () => {
+    V.openHistory();
+  });
 
   const input = V.rootPage.querySelector("[data-import-input]");
   if (input !== null) {
@@ -158,6 +165,7 @@ V.attachEvents = function () {
       await V.handleImportFile(files[0]);
     });
   }
+
   const btnReset = V.rootPage.querySelector("[data-reset]");
   btnReset.addEventListener("click", () => {
     V.resetAll();
@@ -178,6 +186,25 @@ V.animations = function () {
 
   const curves = V.rootPage.querySelectorAll("#line__direction-curved");
   Animation.buildCurvedLine(curves);
+
+  const mmiText = V.rootPage.querySelector("#mmi");
+  if (mmiText) {
+    Animation.typewriterText(mmiText, 2);
+  }
+
+  const animatedTexts = V.rootPage.querySelectorAll(".text__animation");
+  if (animatedTexts && animatedTexts.length > 0) {
+    animatedTexts.forEach((textEl, index) => {
+      setTimeout(() => {
+        Animation.typewriterText(textEl, 1.5);
+      }, index * 500);
+    });
+  }
+
+  const pattern = V.rootPage.querySelector("#pattern");
+  if (pattern) {
+    Animation.pixelatePatternWave(pattern, 1.5);
+  }
 };
 
 V.resetAllProgressUI = function () {
@@ -192,7 +219,6 @@ V.resetAllProgressUI = function () {
   }
 };
 
-//Applique l'état (progress) de l'utilisateur au SVG et met à jour les locks
 V.applyStateToUI = function () {
   const progress = M.user.progress;
 
@@ -205,48 +231,21 @@ V.applyStateToUI = function () {
   applyLocksForAllCompetences(M, V);
 };
 
-// V.refreshPopupIfOpen = function () {
-//   if (!V.popupView) return;
-
-//   if (V.popupView.root === null) return;
-//   if (V.popupView.root.isConnected !== true) return;
-
-//   if (V.currentCompetence === null || V.currentLevel === null) return;
-
-//   const existingValue = M.user.getProgress(V.currentCompetence, V.currentLevel);
-//   V.popupView.setSliderValue(existingValue);
-
-//   const items = [];
-//   for (let i = 0; i < M.user.history.length; i++) {
-//     const h = M.user.history[i];
-//     if (
-//       h.competenceId === V.currentCompetence &&
-//       h.niveauId === V.currentLevel
-//     ) {
-//       items.push(h);
-//     }
-//   }
-
-//   const last = items.slice(-5);
-//   last.reverse();
-
-//   V.popupView.renderHistory(last);
-// };
-
 V.showPopUp = function (levelEl) {
   const competenceEl = V.arbre.getCompetence(levelEl);
   if (!competenceEl) return;
 
   V.currentCompetence = competenceEl.getAttribute("data-competence");
   V.currentLevel = +levelEl.getAttribute("data-niveau");
+  const compName = M.pn.getCompetenceName(V.currentCompetence);
+  const acs = M.pn.getAcs(V.currentCompetence, V.currentLevel);
 
   if (!V.popupView) {
     V.popupView = new PopUpView();
-    V.popupView.bind(() => V.closePopUp(), V.handler_sliderChange);
-  }
 
-  const compName = M.pn.getCompetenceName(V.currentCompetence);
-  const acs = M.pn.getAcs(V.currentCompetence, V.currentLevel);
+    const closeBtn = V.popupView.getCloseButton();
+    closeBtn.addEventListener("click", () => V.closePopUp());
+  }
 
   V.popupView.setCompetenceTitle(compName);
   V.popupView.setNiveauLabel(`Niveau ${V.currentLevel}`);
@@ -262,6 +261,13 @@ V.showPopUp = function (levelEl) {
     );
 
     V.popupView.setAcSliderValue(acEl, saved);
+
+    const proof = M.user.getAcProof(
+      V.currentCompetence,
+      V.currentLevel,
+      acCode,
+    );
+    V.popupView.renderProof(acEl, proof);
   }
 
   const currentProgress = M.user.getProgress(
@@ -270,20 +276,57 @@ V.showPopUp = function (levelEl) {
   );
   V.popupView.setCompetenceEvaluation(currentProgress);
 
-  const historyItems = M.user.history.filter(
-    (h) =>
-      h.competenceId === V.currentCompetence && h.niveauId === V.currentLevel,
-  );
-  const lastFive = historyItems.slice(-5).reverse();
-  V.popupView.renderHistory(lastFive);
+  const validateButtons = V.popupView.getValidateButtons();
+  const justifyButtons = V.popupView.getJustButtons();
 
+  for (const btn of validateButtons) {
+    btn.addEventListener("click", (ev) => {
+      const acEl = ev.target.closest(".ac");
+      if (acEl) {
+        V.handler_sliderChange(acEl);
+      }
+    });
+  }
+  for (const btn of justifyButtons) {
+    btn.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      const acEl = ev.target.closest(".ac");
+      if (!acEl) return;
+
+      const input = acEl.querySelector("[data-proof-input]");
+      if (input) input.click();
+    });
+  }
+  V.popupView.root.addEventListener("click", (ev) => {
+    const removeBtn = ev.target.closest("[data-proof-remove]");
+    if (!removeBtn) return;
+
+    ev.preventDefault();
+    const acEl = removeBtn.closest(".ac");
+    V.handler_proofRemove(acEl);
+  });
+
+  V.popupView.root.addEventListener("change", (ev) => {
+    const input = ev.target.closest("[data-proof-input]");
+    if (!input) return;
+
+    const acEl = input.closest(".ac");
+    if (!acEl) return;
+
+    const file = input.files && input.files[0];
+    if (file) {
+      V.handler_proofSelected(acEl, file);
+    }
+
+    input.value = "";
+  });
   V.popupView.pop(V.rootPage);
 };
 
 V.closePopUp = function () {
-  if (V.popupView) V.popupView.close();
+  if (!V.popupView) return;
+  V.popupView.close();
 };
-
 V.showLockMessage = function (ev, text) {
   const msg = document.createElement("div");
   msg.className = "lock-message";
@@ -308,6 +351,55 @@ V.showLockMessage = function (ev, text) {
   setTimeout(() => {
     if (msg.parentNode) msg.parentNode.removeChild(msg);
   }, 2000);
+};
+
+V.handler_proofSelected = async function (acEl, file) {
+  if (!file) {
+    alert("Aucun fichier sélectionné.");
+    return;
+  }
+
+  const isPdf =
+    file.type === "application/pdf" ||
+    (file.name && file.name.toLowerCase().endsWith(".pdf"));
+
+  if (!isPdf) {
+    alert("Veuillez sélectionner un fichier PDF.");
+    return;
+  }
+
+  const dataUrl = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+  const acCode = V.popupView.getAcCode(acEl);
+
+  M.user.setAcProof(V.currentCompetence, V.currentLevel, acCode, {
+    name: file.name,
+    type: "application/pdf",
+    size: file.size,
+    dataUrl,
+    date: new Date().toISOString(),
+  });
+
+  M.user.save();
+
+  V.popupView.renderProof(
+    acEl,
+    M.user.getAcProof(V.currentCompetence, V.currentLevel, acCode),
+  );
+};
+
+V.handler_proofRemove = function (acEl) {
+  const acCode = V.popupView.getAcCode(acEl);
+
+  M.user.removeAcProof(V.currentCompetence, V.currentLevel, acCode);
+  M.user.save();
+
+  V.popupView.renderProof(acEl, null);
 };
 
 //Exporte progress + historique en fichier JSON
@@ -342,7 +434,6 @@ V.openImportPicker = function () {
   }
 
   input.value = "";
-  //file picker
   input.click();
 };
 
@@ -384,6 +475,11 @@ V.handleImportFile = async function (file) {
 
   V.resetAllProgressUI();
   V.applyStateToUI();
+
+  if (V.popupView) {
+    V.popupView.close();
+  }
+
   alert("Import réussi");
 };
 
@@ -399,6 +495,26 @@ V.resetAll = function () {
   //close pop-up
   if (V.popupView) V.popupView.close();
   alert("Réinitialisation terminée ✅");
+};
+
+V.openHistory = function () {
+  if (!V.historyView) {
+    V.historyView = new HistoryView();
+
+    const closeBtn = V.historyView.getCloseButton();
+    closeBtn.addEventListener("click", () => V.closeHistory());
+  }
+
+  const allHistory = [...M.user.history].reverse();
+
+  V.historyView.renderHistory(allHistory, M.pn);
+
+  V.historyView.pop(V.rootPage);
+};
+
+V.closeHistory = function () {
+  if (!V.historyView) return;
+  V.historyView.close();
 };
 
 export function ArbrePage() {

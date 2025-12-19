@@ -59,12 +59,14 @@ client/src/
 ### Concept
 
 Les layouts définissent la **structure globale** d'une ou plusieurs pages (header, footer, sidebar, etc.). Ils utilisent des **slots** pour indiquer où insérer :
+
 - Le contenu de la page (slot par défaut `<slot></slot>`)
 - Des composants spécifiques (slots nommés `<slot name="header"></slot>`)
 
 ### Exemple : Layout Root
 
 **`layouts/root/template.html`**
+
 ```html
 <div style="min-height: 100vh; display: flex; flex-direction: column;">
   <slot name="header"></slot>
@@ -76,23 +78,24 @@ Les layouts définissent la **structure globale** d'une ou plusieurs pages (head
 ```
 
 **`layouts/root/layout.js`**
+
 ```javascript
 import template from "./template.html?raw";
-import { htmlToFragment } from "../../lib/utils.js";
-import { HeaderView } from "../../ui/header/index.js";
-import { FooterView } from "../../ui/footer/index.js";
+import { htmlToFragment } from "@/lib/utils.js";
+import { HeaderView } from "@/ui/header/index.js";
+import { FooterView } from "@/ui/footer/index.js";
 
 export function RootLayout() {
   let layout = htmlToFragment(template);
-  
+
   // Générer les composants
   let header = HeaderView.dom();
   let footer = FooterView.dom();
-  
+
   // Remplacer les slots nommés
   layout.querySelector('slot[name="header"]').replaceWith(header);
   layout.querySelector('slot[name="footer"]').replaceWith(footer);
-  
+
   return layout;
 }
 ```
@@ -100,6 +103,7 @@ export function RootLayout() {
 ### Enregistrement d'un layout
 
 Dans `main.js` :
+
 ```javascript
 import { RootLayout } from "./layouts/root/layout.js";
 
@@ -120,6 +124,7 @@ Les pages représentent le **contenu principal** d'une route. Elles peuvent êtr
 - **Dynamiques** : contenu généré depuis des données (ex: liste de produits, détail produit)
 
 Les pages suivent le pattern **MVC** :
+
 - **Model (M)** : Données de la page
 - **Controller (C)** : Logique métier et orchestration
 - **View (V)** : Génération du DOM et gestion des événements
@@ -127,10 +132,15 @@ Les pages suivent le pattern **MVC** :
 ### Exemple : Page statique (Home)
 
 **`pages/home/template.html`**
+
 ```html
 <div class="mx-auto max-w-4xl p-6">
   <h1 class="mb-6 text-4xl font-bold">Accueil</h1>
-  <img src="https://images.unsplash.com/..." alt="..." class="mb-6 rounded-lg" />
+  <img
+    src="https://images.unsplash.com/..."
+    alt="..."
+    class="mb-6 rounded-lg"
+  />
   <nav class="flex gap-4">
     <a href="/about" data-link class="btn">À propos</a>
     <a href="/products" data-link class="btn">Voir les produits</a>
@@ -139,6 +149,7 @@ Les pages suivent le pattern **MVC** :
 ```
 
 **`pages/home/page.js`**
+
 ```javascript
 import template from "./template.html?raw";
 
@@ -150,6 +161,7 @@ export function HomePage() {
 ### Exemple : Page dynamique (Products)
 
 **`pages/products/template.html`**
+
 ```html
 <div>
   <h1 style="font-size: 2rem; font-weight: bold; margin-bottom: 2rem;">
@@ -160,56 +172,57 @@ export function HomePage() {
 ```
 
 **`pages/products/page.js`**
+
 ```javascript
-import { ProductData } from "../../data/product.js";
-import { ProductView } from "../../ui/product/index.js";
-import { htmlToFragment } from "../../lib/utils.js";
+import { ProductData } from "@/data/product.js";
+import { ProductView } from "@/ui/product/index.js";
+import { htmlToFragment } from "@/lib/utils.js";
 import template from "./template.html?raw";
 
 let M = {
-  products: []
+  products: [],
 };
 
 let C = {};
 
-C.handler_clickOnProduct = function(ev) {
+C.handler_clickOnProduct = function (ev) {
   if (ev.target.dataset.buy !== undefined) {
     let id = ev.target.dataset.buy;
     alert(`Le produit d'identifiant ${id} ? Excellent choix !`);
   }
-}
+};
 
-C.init = async function() {
-  M.products = await ProductData.fetchAll(); 
+C.init = async function () {
+  M.products = await ProductData.fetchAll();
   return V.init(M.products);
-}
+};
 
 let V = {};
 
-V.init = function(data) {
+V.init = function (data) {
   let fragment = V.createPageFragment(data);
   V.attachEvents(fragment);
   return fragment;
-}
+};
 
-V.createPageFragment = function(data) {
+V.createPageFragment = function (data) {
   // Créer le fragment depuis le template
   let pageFragment = htmlToFragment(template);
-  
+
   // Générer les produits via le composant UI
   let productsDOM = ProductView.dom(data);
-  
+
   // Remplacer le slot par les produits
   pageFragment.querySelector('slot[name="products"]').replaceWith(productsDOM);
-  
-  return pageFragment;
-}
 
-V.attachEvents = function(pageFragment) {
+  return pageFragment;
+};
+
+V.attachEvents = function (pageFragment) {
   let root = pageFragment.firstElementChild;
   root.addEventListener("click", C.handler_clickOnProduct);
   return pageFragment;
-}
+};
 
 export function ProductsPage(params) {
   return C.init();
@@ -219,6 +232,7 @@ export function ProductsPage(params) {
 ### Enregistrement d'une page
 
 Dans `main.js` :
+
 ```javascript
 import { HomePage } from "./pages/home/page.js";
 import { ProductsPage } from "./pages/products/page.js";
@@ -243,9 +257,12 @@ Les composants UI sont des **éléments réutilisables** utilisés dans les page
 #### Composant statique (sans données dynamiques)
 
 **`ui/header/template.html`**
+
 ```html
 <header style="background: #333; color: white; padding: 1rem;">
-  <div style="display: flex; justify-content: space-between; align-items: center;">
+  <div
+    style="display: flex; justify-content: space-between; align-items: center;"
+  >
     <h2 style="margin: 0;">Click & Collect</h2>
     <nav style="display: flex; gap: 1rem;">
       <a href="/" data-link>Accueil</a>
@@ -257,18 +274,19 @@ Les composants UI sont des **éléments réutilisables** utilisés dans les page
 ```
 
 **`ui/header/index.js`**
+
 ```javascript
-import { htmlToFragment } from "../../lib/utils.js";
+import { htmlToFragment } from "@/lib/utils.js";
 import template from "./template.html?raw";
 
 let HeaderView = {
-  html: function() {
+  html: function () {
     return template;
   },
 
-  dom: function() {
+  dom: function () {
     return htmlToFragment(template);
-  }
+  },
 };
 
 export { HeaderView };
@@ -277,12 +295,13 @@ export { HeaderView };
 #### Composant dynamique (avec placeholders)
 
 **`ui/product/template.html`**
+
 ```html
 <article class="rounded-lg bg-white p-6 shadow-md">
   <span class="text-sm text-gray-500">ID: {{id}}</span>
   <h3 class="mb-4 text-xl font-bold">{{name}}</h3>
-  <button 
-    data-buy="{{id}}" 
+  <button
+    data-buy="{{id}}"
     class="w-full rounded-lg bg-green-600 px-4 py-2 text-white"
   >
     Acheter
@@ -291,22 +310,24 @@ export { HeaderView };
 ```
 
 **`ui/product/index.js`**
+
 ```javascript
-import { genericRenderer, htmlToFragment } from "../../lib/utils.js";
+import { genericRenderer, htmlToFragment } from "@/lib/utils.js";
 import template from "./template.html?raw";
 
 let ProductView = {
-  html: function(data) {
-    let htmlString = '<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">';
+  html: function (data) {
+    let htmlString =
+      '<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">';
     for (let obj of data) {
       htmlString += genericRenderer(template, obj);
     }
-    return htmlString + '</div>';
+    return htmlString + "</div>";
   },
 
-  dom: function(data) {
+  dom: function (data) {
     return htmlToFragment(ProductView.html(data));
-  }
+  },
 };
 
 export { ProductView };
@@ -329,26 +350,29 @@ export { ProductView };
    </div>
    ```
 3. **Créer l'index.js** : `ui/mon-composant/index.js`
+
    ```javascript
-   import { genericRenderer, htmlToFragment } from "../../lib/utils.js";
+   import { genericRenderer, htmlToFragment } from "@/lib/utils.js";
    import template from "./template.html?raw";
 
    let MonComposantView = {
-     html: function(data) {
+     html: function (data) {
        return genericRenderer(template, data);
      },
 
-     dom: function(data) {
+     dom: function (data) {
        return htmlToFragment(MonComposantView.html(data));
-     }
+     },
    };
 
    export { MonComposantView };
    ```
+
 4. **Utiliser le composant** dans une page ou un layout :
+
    ```javascript
-   import { MonComposantView } from "../../ui/mon-composant/index.js";
-   
+   import { MonComposantView } from "@/ui/mon-composant/index.js";
+
    let html = MonComposantView.html({ title: "Titre", content: "Contenu" });
    let dom = MonComposantView.dom({ title: "Titre", content: "Contenu" });
    ```
@@ -364,6 +388,7 @@ export { ProductView };
    </div>
    ```
 3. **Créer page.js** : `pages/ma-page/page.js`
+
    ```javascript
    import template from "./template.html?raw";
 
@@ -371,10 +396,12 @@ export { ProductView };
      return template;
    }
    ```
+
 4. **Enregistrer la route** dans `main.js` :
+
    ```javascript
    import { MaPage } from "./pages/ma-page/page.js";
-   
+
    router.addRoute("/ma-page", MaPage);
    ```
 
@@ -389,51 +416,54 @@ export { ProductView };
    </div>
    ```
 3. **Créer page.js** : `pages/ma-page-dynamique/page.js`
+
    ```javascript
-   import { MonDataLoader } from "../../data/mon-data.js";
-   import { MonComposantView } from "../../ui/mon-composant/index.js";
-   import { htmlToFragment } from "../../lib/utils.js";
+   import { MonDataLoader } from "@/data/mon-data.js";
+   import { MonComposantView } from "@/ui/mon-composant/index.js";
+   import { htmlToFragment } from "@/lib/utils.js";
    import template from "./template.html?raw";
 
    let M = {
-     data: []
+     data: [],
    };
 
    let C = {};
 
-   C.init = async function() {
+   C.init = async function () {
      M.data = await MonDataLoader.fetchAll();
      return V.init(M.data);
-   }
+   };
 
    let V = {};
 
-   V.init = function(data) {
+   V.init = function (data) {
      let fragment = V.createPageFragment(data);
      V.attachEvents(fragment);
      return fragment;
-   }
+   };
 
-   V.createPageFragment = function(data) {
+   V.createPageFragment = function (data) {
      let pageFragment = htmlToFragment(template);
      let contenuDOM = MonComposantView.dom(data);
      pageFragment.querySelector('slot[name="contenu"]').replaceWith(contenuDOM);
      return pageFragment;
-   }
+   };
 
-   V.attachEvents = function(pageFragment) {
+   V.attachEvents = function (pageFragment) {
      // Attacher les event listeners ici
      return pageFragment;
-   }
+   };
 
    export function MaPageDynamique(params) {
      return C.init();
    }
    ```
+
 4. **Enregistrer la route** dans `main.js` :
+
    ```javascript
    import { MaPageDynamique } from "./pages/ma-page-dynamique/page.js";
-   
+
    router.addRoute("/ma-page-dynamique", MaPageDynamique);
    ```
 
@@ -454,30 +484,33 @@ export { ProductView };
    </div>
    ```
 3. **Créer layout.js** : `layouts/mon-layout/layout.js`
+
    ```javascript
    import template from "./template.html?raw";
-   import { htmlToFragment } from "../../lib/utils.js";
-   import { HeaderView } from "../../ui/header/index.js";
-   import { FooterView } from "../../ui/footer/index.js";
-   import { SidebarView } from "../../ui/sidebar/index.js";
+   import { htmlToFragment } from "@/lib/utils.js";
+   import { HeaderView } from "@/ui/header/index.js";
+   import { FooterView } from "@/ui/footer/index.js";
+   import { SidebarView } from "@/ui/sidebar/index.js";
 
    export function MonLayout() {
      let layout = htmlToFragment(template);
      let header = HeaderView.dom();
      let footer = FooterView.dom();
      let sidebar = SidebarView.dom();
-     
+
      layout.querySelector('slot[name="header"]').replaceWith(header);
      layout.querySelector('slot[name="footer"]').replaceWith(footer);
      layout.querySelector('slot[name="sidebar"]').replaceWith(sidebar);
-     
+
      return layout;
    }
    ```
+
 4. **Enregistrer le layout** dans `main.js` :
+
    ```javascript
    import { MonLayout } from "./layouts/mon-layout/layout.js";
-   
+
    router.addLayout("/admin", MonLayout);
    ```
 
@@ -486,11 +519,13 @@ export { ProductView };
 ## Flux de données
 
 ### Page statique
+
 ```
 Route → Handler → Page (template HTML) → Layout → DOM
 ```
 
 ### Page dynamique
+
 ```
 Route → Handler → Page (MVC)
                     ↓
@@ -515,6 +550,7 @@ Les **slots** sont des emplacements réservés dans un template HTML qui seront 
 - **Slot nommé** : `<slot name="header"></slot>` (pour des zones spécifiques)
 
 Remplacement d'un slot :
+
 ```javascript
 pageFragment.querySelector('slot[name="header"]').replaceWith(headerDOM);
 ```
@@ -569,6 +605,7 @@ Les pages et layouts doivent retourner des `DocumentFragment` pour permettre la 
 ### 5. Nommer les event handlers
 
 Préfixer les handlers avec `handler_` pour la lisibilité :
+
 ```javascript
 C.handler_clickOnButton = function(ev) { ... }
 ```
@@ -576,11 +613,11 @@ C.handler_clickOnButton = function(ev) { ... }
 ### 6. Séparer création du DOM et attachement des événements
 
 ```javascript
-V.init = function(data) {
-  let fragment = V.createPageFragment(data);  // Création
-  V.attachEvents(fragment);                    // Événements
+V.init = function (data) {
+  let fragment = V.createPageFragment(data); // Création
+  V.attachEvents(fragment); // Événements
   return fragment;
-}
+};
 ```
 
 ---
@@ -604,6 +641,7 @@ Convertit une chaîne HTML en DocumentFragment.
 ## Conclusion
 
 Cette architecture modulaire permet de :
+
 - ✅ Réutiliser facilement des composants
 - ✅ Maintenir une séparation claire des responsabilités
 - ✅ Ajouter de nouvelles pages/composants facilement

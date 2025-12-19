@@ -1,7 +1,25 @@
 <ul class="ac" data-ac="{{ac__code}}">
-  <li class="ac__info">
-    <div class="ac__code">{{ac__code}}</div>
-    <div class="ac__libelle">{{ac__libelle}}</div>
+  <li class="ac__section">
+    <div class="ac__info">
+      <div class="ac__code">{{ac__code}}</div>
+      <div class="ac__libelle">{{ac__libelle}}</div>
+    </div>
+    <button class="button__addPreuve" data-button-add-proof>Justifier</button>
+
+    <input
+      type="file"
+      accept="application/pdf"
+      class="ac__proofInput"
+      data-proof-input
+      hidden
+    />
+    <div class="ac__proofMeta" data-proof-meta style="display: none">
+      <span data-proof-name class="proof__name"></span>
+      <a href="#" target="_blank" rel="noopener" data-proof-open>Ouvrir</a>
+      <button type="button" data-proof-remove class="proof__delete">
+        Supprimer
+      </button>
+    </div>
   </li>
 
   <li class="ac__slider">

@@ -16,6 +16,7 @@
 @import "./ui/spinner/style.css";
 @import "./ui/star/style.css";
 @import "./ui/pop-up/styles.css";
+@import "./ui/historique/style.css";
 
 :root {
   /* Primitives Tokens */
@@ -82,6 +83,7 @@
 
   /*neutral*/
   --color-white: #f2ede7;
+  --color-white90: hsla(10, 5%, 78%, 1);
   --color-gray: #413559;
   --color-dark: #29154d;
   --color-darker: #231045;

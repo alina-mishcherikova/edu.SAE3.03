@@ -1,4 +1,4 @@
-import { htmlToDOM  } from "../../lib/utils.js";
+import { htmlToDOM } from "@/lib/utils.js";
 import template from "./template.html?raw";
 
 // HeaderView est un composant statique
@@ -11,7 +11,7 @@ let HeaderView = {
 
   dom: function () {
     return htmlToDOM(template);
-  }
+  },
 };
 
 export { HeaderView };

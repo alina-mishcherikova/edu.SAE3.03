@@ -1,8 +1,7 @@
-import { htmlToDOM } from "../../lib/utils.js";
+import { htmlToDOM } from "@/lib/utils.js";
 import template from "./template.html?raw";
 
 class FlowerView {
-
   constructor() {
     this.root = htmlToDOM(template);
   }
@@ -14,7 +13,5 @@ class FlowerView {
   dom() {
     return this.root;
   }
-
- 
 }
 export { FlowerView };

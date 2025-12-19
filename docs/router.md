@@ -21,7 +21,7 @@ Le Router est un système de routage côté client (SPA) qui gère la navigation
 ```javascript
 import { Router } from "./lib/router.js";
 
-const router = new Router('app', options);
+const router = new Router("app", options);
 ```
 
 ### Paramètres
@@ -33,7 +33,7 @@ const router = new Router('app', options);
 ### Exemple
 
 ```javascript
-const router = new Router('app', { loginPath: '/signin' });
+const router = new Router("app", { loginPath: "/signin" });
 ```
 
 ---
@@ -97,25 +97,28 @@ export function ProductDetailPage(params) {
 ### Exemple complet
 
 **Route :**
+
 ```javascript
 router.addRoute("/products/:id", ProductDetailPage);
 ```
 
 **Handler :**
+
 ```javascript
 export function ProductDetailPage(params) {
   const productId = params.id;
-  
+
   // Charger le produit avec l'ID
   return fetch(`/api/products/${productId}`)
-    .then(res => res.json())
-    .then(product => {
+    .then((res) => res.json())
+    .then((product) => {
       return `<h1>${product.name}</h1>`;
     });
 }
 ```
 
 **Utilisation :**
+
 ```html
 <a href="/products/123" data-link>Voir le produit 123</a>
 ```
@@ -144,11 +147,12 @@ router.addLayout(pathPrefix, layoutFunction);
 Le router choisit le layout avec le **préfixe le plus long** qui correspond à la route.
 
 ```javascript
-router.addLayout("/", RootLayout);           // Pour toutes les routes
+router.addLayout("/", RootLayout); // Pour toutes les routes
 router.addLayout("/dashboard", DashboardLayout); // Plus spécifique
 ```
 
 **Exemples :**
+
 - `/` → Utilise `RootLayout`
 - `/about` → Utilise `RootLayout`
 - `/dashboard` → Utilise `DashboardLayout`
@@ -157,29 +161,32 @@ router.addLayout("/dashboard", DashboardLayout); // Plus spécifique
 ### Exemple de layout
 
 **Layout avec slots :**
+
 ```javascript
-import { htmlToFragment } from "../../lib/utils.js";
+import { htmlToFragment } from "@/lib/utils.js";
 import template from "./template.html?raw";
-import { HeaderView } from "../../ui/header/index.js";
-import { FooterView } from "../../ui/footer/index.js";
+import { HeaderView } from "@/ui/header/index.js";
+import { FooterView } from "@/ui/footer/index.js";
 
 export function RootLayout() {
   let layout = htmlToFragment(template);
-  
+
   // Remplacer les slots nommés
   layout.querySelector('slot[name="header"]').replaceWith(HeaderView.dom());
   layout.querySelector('slot[name="footer"]').replaceWith(FooterView.dom());
-  
+
   return layout;
 }
 ```
 
 **Template du layout :**
+
 ```html
 <div class="layout">
   <slot name="header"></slot>
   <main>
-    <slot></slot> <!-- Le contenu de la page sera inséré ici -->
+    <slot></slot>
+    <!-- Le contenu de la page sera inséré ici -->
   </main>
   <slot name="footer"></slot>
 </div>
@@ -200,13 +207,13 @@ router.addRoute("/login", LoginPage, { useLayout: false });
 Le router gère l'authentification avec un système de guards.
 
 ```javascript
-const router = new Router('app', { loginPath: '/login' });
+const router = new Router("app", { loginPath: "/login" });
 ```
 
 ### Définir l'état d'authentification
 
 ```javascript
-router.setAuth(true);  // Utilisateur connecté
+router.setAuth(true); // Utilisateur connecté
 router.setAuth(false); // Utilisateur déconnecté
 ```
 
@@ -227,8 +234,9 @@ router.addRoute("/profile", ProfilePage, { requireAuth: true });
 ### Exemple complet
 
 **Configuration :**
+
 ```javascript
-const router = new Router('app', { loginPath: '/login' });
+const router = new Router("app", { loginPath: "/login" });
 
 // Routes publiques
 router.addRoute("/", HomePage);
@@ -245,6 +253,7 @@ router.start();
 ```
 
 **Page de login :**
+
 ```javascript
 export function LoginPage() {
   return `
@@ -283,8 +292,8 @@ Le router intercepte automatiquement les clics et empêche le rechargement de la
 ### Navigation programmatique
 
 ```javascript
-router.navigate('/products');
-router.navigate('/products/123');
+router.navigate("/products");
+router.navigate("/products/123");
 ```
 
 ### Boutons de navigation du navigateur
@@ -330,13 +339,13 @@ Le router supporte les handlers qui retournent des **Promises**.
 ```javascript
 export async function ProductsPage() {
   // Charger les données depuis une API
-  const products = await fetch('/api/products').then(r => r.json());
-  
+  const products = await fetch("/api/products").then((r) => r.json());
+
   // Générer le contenu
   return `
     <h1>Produits</h1>
     <div class="products">
-      ${products.map(p => `<div>${p.name}</div>`).join('')}
+      ${products.map((p) => `<div>${p.name}</div>`).join("")}
     </div>
   `;
 }
@@ -361,7 +370,7 @@ export function HomePage() {
 ### 2. DocumentFragment
 
 ```javascript
-import { htmlToFragment } from "../../lib/utils.js";
+import { htmlToFragment } from "@/lib/utils.js";
 
 export function HomePage() {
   return htmlToFragment(`<h1>Bienvenue</h1>`);
@@ -381,6 +390,7 @@ router.start();
 ```
 
 Cette méthode :
+
 1. Analyse l'URL actuelle
 2. Trouve la route correspondante
 3. Exécute le handler
@@ -404,7 +414,7 @@ import { RootLayout } from "./layouts/root/layout.js";
 import { DashboardLayout } from "./layouts/dashboard/layout.js";
 
 // Initialisation
-const router = new Router('app', { loginPath: '/login' });
+const router = new Router("app", { loginPath: "/login" });
 
 // Layouts
 router.addLayout("/", RootLayout);
@@ -437,27 +447,27 @@ router.start();
 ### Constructeur
 
 ```javascript
-new Router(id, options)
+new Router(id, options);
 ```
 
 ### Méthodes publiques
 
-| Méthode | Description |
-|---------|-------------|
-| `addRoute(path, handler, options)` | Ajoute une route |
-| `addLayout(pathPrefix, layoutFn)` | Ajoute un layout |
-| `navigate(path)` | Navigue vers une route |
-| `setAuth(isAuth)` | Définit l'état d'authentification |
-| `login()` | Connecte l'utilisateur |
-| `logout()` | Déconnecte l'utilisateur |
-| `start()` | Démarre le router |
+| Méthode                            | Description                       |
+| ---------------------------------- | --------------------------------- |
+| `addRoute(path, handler, options)` | Ajoute une route                  |
+| `addLayout(pathPrefix, layoutFn)`  | Ajoute un layout                  |
+| `navigate(path)`                   | Navigue vers une route            |
+| `setAuth(isAuth)`                  | Définit l'état d'authentification |
+| `login()`                          | Connecte l'utilisateur            |
+| `logout()`                         | Déconnecte l'utilisateur          |
+| `start()`                          | Démarre le router                 |
 
 ### Options de route
 
-| Option | Type | Défaut | Description |
-|--------|------|--------|-------------|
+| Option        | Type    | Défaut  | Description                         |
+| ------------- | ------- | ------- | ----------------------------------- |
 | `requireAuth` | boolean | `false` | Route protégée par authentification |
-| `useLayout` | boolean | `true` | Utilise le layout correspondant |
+| `useLayout`   | boolean | `true`  | Utilise le layout correspondant     |
 
 ---
 
@@ -495,10 +505,10 @@ router.addRoute("*", The404Page);
 ```javascript
 export async function ProductsPage() {
   try {
-    const products = await fetch('/api/products').then(r => r.json());
+    const products = await fetch("/api/products").then((r) => r.json());
     return ProductView.dom(products);
   } catch (error) {
-    console.error('Erreur de chargement:', error);
+    console.error("Erreur de chargement:", error);
     return `<div class="error">Erreur de chargement des produits</div>`;
   }
 }
